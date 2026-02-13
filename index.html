@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>For You</title>
+
+<style>
+body{
+    margin:0;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    background:linear-gradient(#ffd6e0,#fff0f5);
+    font-family:Arial, sans-serif;
+    overflow:hidden;
+}
+
+/* button */
+button{
+    padding:16px 32px;
+    font-size:22px;
+    border:none;
+    border-radius:12px;
+    background:#ff4d6d;
+    color:white;
+    cursor:pointer;
+}
+
+/* heart container */
+.heart{
+    position:relative;
+    width:230px;
+    height:210px;
+    display:none;
+    animation:fadeIn 1.2s ease forwards;
+}
+
+/* heart shape */
+.heart:before,
+.heart:after{
+    content:"";
+    position:absolute;
+    left:115px;
+    top:0;
+    width:115px;
+    height:180px;
+    background:#ff1a4d;
+    border-radius:115px 115px 0 0;
+    transform:rotate(-45deg);
+    transform-origin:0 100%;
+    box-shadow:0 0 35px rgba(255,0,70,0.6);
+    z-index:1;
+}
+
+.heart:after{
+    left:0;
+    transform:rotate(45deg);
+    transform-origin:100% 100%;
+}
+
+/* message centered clearly */
+.message{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+    font-size:34px;
+    font-weight:bold;
+    color:white;
+    text-shadow:0 0 10px rgba(0,0,0,0.3);
+    z-index:2;
+    text-align:center;
+}
+
+/* floating hearts */
+.small{
+    position:absolute;
+    color:#ff1a4d;
+    font-size:22px;
+    animation:float 6s linear infinite;
+}
+
+@keyframes float{
+    from{transform:translateY(0);opacity:1;}
+    to{transform:translateY(-900px);opacity:0;}
+}
+
+@keyframes fadeIn{
+    from{transform:scale(0.5);opacity:0;}
+    to{transform:scale(1);opacity:1;}
+}
+</style>
+</head>
+
+<body>
+
+<button id="btn" onclick="start()">Click to know about me</button>
+
+<div id="heart" class="heart">
+    <div class="message">I LOVE YOU</div>
+</div>
+
+<!-- optional background music -->
+<audio id="music" loop>
+    <source src="music.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+function start(){
+
+    document.getElementById("btn").style.display="none";
+    document.getElementById("heart").style.display="block";
+
+    // play music if file exists
+    document.getElementById("music").play().catch(()=>{});
+
+    // floating hearts
+    for(let i=0;i<35;i++){
+        let h=document.createElement("div");
+        h.innerHTML="❤";
+        h.className="small";
+        h.style.left=Math.random()*100+"%";
+        h.style.bottom="0px";
+        h.style.animationDuration=(Math.random()*3+3)+"s";
+        document.body.appendChild(h);
+    }
+}
+</script>
+
+</body>
+</html>
