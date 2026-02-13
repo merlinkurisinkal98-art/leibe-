@@ -16,23 +16,47 @@ body{
     overflow:hidden;
 }
 
-/* general button style */
+/* general card for steps */
+.step{
+    display:none;
+    text-align:center;
+    background:rgba(255,255,255,0.8);
+    padding:30px 40px;
+    border-radius:24px;
+    box-shadow:0 18px 40px rgba(0,0,0,0.18);
+    backdrop-filter:blur(12px);
+    animation:fadeIn 0.5s ease forwards;
+}
+
+h1, h2, h3{
+    color:#ff1a4d;
+    margin-bottom:18px;
+    text-shadow:0 3px 10px rgba(0,0,0,0.18);
+}
+
+/* buttons */
+.btn-row{
+    display:flex;
+    justify-content:center;
+    gap:16px;
+}
+
 button{
-    padding:14px 30px;
-    font-size:20px;
+    padding:12px 28px;
+    font-size:18px;
     border:none;
     border-radius:999px;
     background:#ff4d6d;
     color:white;
     cursor:pointer;
-    box-shadow:0 10px 25px rgba(255,77,109,0.4);
+    box-shadow:0 10px 24px rgba(255,77,109,0.45);
     transition:transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
 button:hover{
     transform:translateY(-2px);
     background:#ff3158;
-    box-shadow:0 14px 30px rgba(255,49,88,0.45);
+    box-shadow:0 14px 30px rgba(255,49,88,0.5);
 }
 
 button:active{
@@ -40,17 +64,9 @@ button:active{
     box-shadow:0 6px 15px rgba(255,49,88,0.35);
 }
 
-h1, h2{
-    color:#ff1a4d;
-    text-shadow:0 4px 12px rgba(0,0,0,0.15);
-    margin-bottom:18px;
-}
-
-/* steps containers */
-.step{
-    display:none;
-    text-align:center;
-    animation:fadeIn 0.6s ease forwards;
+/* the naughty no button */
+.no-btn{
+    position:relative;
 }
 
 /* popup */
@@ -59,14 +75,14 @@ h1, h2{
     top:50%;
     left:50%;
     transform:translate(-50%,-50%) scale(0.7);
-    background:rgba(255,255,255,0.9);
+    background:rgba(255,255,255,0.95);
     padding:40px 50px;
-    border-radius:24px;
-    box-shadow:0 20px 45px rgba(0,0,0,0.25);
+    border-radius:28px;
+    box-shadow:0 24px 55px rgba(0,0,0,0.3);
     text-align:center;
     opacity:0;
     z-index:10;
-    backdrop-filter:blur(10px);
+    backdrop-filter:blur(14px);
     animation:popupIn 0.6s ease forwards;
 }
 
@@ -74,10 +90,16 @@ h1, h2{
     font-size:32px;
     font-weight:bold;
     color:#ff1450;
-    text-shadow:0 0 15px rgba(255,20,80,0.5);
+    margin-bottom:10px;
+    text-shadow:0 0 16px rgba(255,20,80,0.6);
 }
 
-/* floating / popping hearts */
+.popup-sub{
+    font-size:18px;
+    color:#ff4d6d;
+}
+
+/* floating hearts */
 .heart-pop{
     position:fixed;
     color:#ff1a4d;
@@ -85,6 +107,13 @@ h1, h2{
     pointer-events:none;
     animation:floatUp 4s linear forwards;
     text-shadow:0 0 12px rgba(255,26,77,0.7);
+}
+
+/* subtle hint text */
+.hint{
+    margin-top:10px;
+    font-size:14px;
+    color:#ff6b8b;
 }
 
 /* animations */
@@ -95,7 +124,7 @@ h1, h2{
 }
 
 @keyframes fadeIn{
-    from{opacity:0;transform:translateY(10px);}
+    from{opacity:0;transform:translateY(12px);}
     to{opacity:1;transform:translateY(0);}
 }
 
@@ -108,21 +137,39 @@ h1, h2{
 
 <body>
 
-<!-- Step 1: Are you bored? -->
+<!-- Step 1 -->
 <div id="step1" class="step" style="display:block;">
     <h1>Are you bored? 🥱</h1>
-    <button onclick="goToStep2()">Yes</button>
+    <div class="btn-row">
+        <button onclick="goToStep(2)">Yes</button>
+        <button class="no-btn" id="no1" onmouseover="runAway('no1')">No</button>
+    </div>
+    <div class="hint">(I think you are…)</div>
 </div>
 
-<!-- Step 2: Do you love me? -->
+<!-- Step 2 -->
 <div id="step2" class="step">
+    <h2>Do you want a little secret? 🤫</h2>
+    <div class="btn-row">
+        <button onclick="goToStep(3)">Yes</button>
+    </div>
+    <div class="hint">It’s a cute one, promise.</div>
+</div>
+
+<!-- Step 3 -->
+<div id="step3" class="step">
     <h2>Do you love me? 💕</h2>
-    <button onclick="showLovePopup()">Yes</button>
+    <div class="btn-row">
+        <button onclick="showLovePopup()">Yes</button>
+        <button class="no-btn" id="no2" onmouseover="runAway('no2')">No</button>
+    </div>
+    <div class="hint">Yes is the only correct answer btw.</div>
 </div>
 
 <!-- Love popup -->
 <div id="lovePopup" class="popup" style="display:none;">
     <div class="popup-message">I LOVE YOU TOO 💘</div>
+    <div class="popup-sub">Now you’re stuck with me forever.</div>
 </div>
 
 <!-- optional background music -->
@@ -131,21 +178,38 @@ h1, h2{
 </audio>
 
 <script>
-function goToStep2(){
-    document.getElementById("step1").style.display="none";
-    document.getElementById("step2").style.display="block";
+function goToStep(num){
+    // hide all
+    for(let i=1;i<=3;i++){
+        document.getElementById("step"+i).style.display="none";
+    }
+    // show requested
+    document.getElementById("step"+num).style.display="block";
+}
+
+// make "No" buttons run away playfully
+function runAway(id){
+    const btn = document.getElementById(id);
+    const maxX = window.innerWidth - 120; // some margin
+    const maxY = window.innerHeight - 60;
+
+    const randX = Math.random() * maxX;
+    const randY = Math.random() * maxY;
+
+    btn.style.position = "fixed";
+    btn.style.left = randX + "px";
+    btn.style.top = randY + "px";
 }
 
 function showLovePopup(){
-    // show popup
     const popup = document.getElementById("lovePopup");
     popup.style.display = "block";
 
     // play music if available
     document.getElementById("music").play().catch(()=>{});
 
-    // create hearts
-    createHearts(40);
+    // heart explosion
+    createHearts(60);
 }
 
 function createHearts(count){
@@ -154,18 +218,17 @@ function createHearts(count){
         h.className = "heart-pop";
         h.innerHTML = "❤";
 
-        // random horizontal position and size
+        // random position at bottom-ish
         h.style.left = Math.random()*100 + "vw";
-        h.style.bottom = (Math.random()*10) + "vh";
-        h.style.fontSize = (18 + Math.random()*18) + "px";
+        h.style.bottom = (Math.random()*15) + "vh";
 
-        // random animation duration
+        // random size and duration
+        h.style.fontSize = (18 + Math.random()*20) + "px";
         const duration = 3 + Math.random()*2;
         h.style.animationDuration = duration + "s";
 
         document.body.appendChild(h);
 
-        // remove after animation finishes
         setTimeout(()=>{ h.remove(); }, duration*1000);
     }
 }
