@@ -11,94 +11,118 @@ body{
     justify-content:center;
     align-items:center;
     flex-direction:column;
-    background:linear-gradient(#ffd6e0,#fff0f5);
+    background:linear-gradient(135deg,#ffd6e0,#ffe5f0,#fff0f5);
     font-family:Arial, sans-serif;
     overflow:hidden;
 }
 
-/* button */
+/* general button style */
 button{
-    padding:16px 32px;
-    font-size:22px;
+    padding:14px 30px;
+    font-size:20px;
     border:none;
-    border-radius:12px;
+    border-radius:999px;
     background:#ff4d6d;
     color:white;
     cursor:pointer;
+    box-shadow:0 10px 25px rgba(255,77,109,0.4);
+    transition:transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
 }
 
-/* heart container */
-.heart{
-    position:relative;
-    width:230px;
-    height:210px;
+button:hover{
+    transform:translateY(-2px);
+    background:#ff3158;
+    box-shadow:0 14px 30px rgba(255,49,88,0.45);
+}
+
+button:active{
+    transform:translateY(1px);
+    box-shadow:0 6px 15px rgba(255,49,88,0.35);
+}
+
+h1, h2{
+    color:#ff1a4d;
+    text-shadow:0 4px 12px rgba(0,0,0,0.15);
+    margin-bottom:18px;
+}
+
+/* steps containers */
+.step{
     display:none;
-    animation:fadeIn 1.2s ease forwards;
+    text-align:center;
+    animation:fadeIn 0.6s ease forwards;
 }
 
-/* heart shape */
-.heart:before,
-.heart:after{
-    content:"";
-    position:absolute;
-    left:115px;
-    top:0;
-    width:115px;
-    height:180px;
-    background:#ff1a4d;
-    border-radius:115px 115px 0 0;
-    transform:rotate(-45deg);
-    transform-origin:0 100%;
-    box-shadow:0 0 35px rgba(255,0,70,0.6);
-    z-index:1;
-}
-
-.heart:after{
-    left:0;
-    transform:rotate(45deg);
-    transform-origin:100% 100%;
-}
-
-/* message centered clearly */
-.message{
-    position:absolute;
+/* popup */
+.popup{
+    position:fixed;
     top:50%;
     left:50%;
-    transform:translate(-50%,-50%);
-    font-size:34px;
-    font-weight:bold;
-    color:white;
-    text-shadow:0 0 10px rgba(0,0,0,0.3);
-    z-index:2;
+    transform:translate(-50%,-50%) scale(0.7);
+    background:rgba(255,255,255,0.9);
+    padding:40px 50px;
+    border-radius:24px;
+    box-shadow:0 20px 45px rgba(0,0,0,0.25);
     text-align:center;
+    opacity:0;
+    z-index:10;
+    backdrop-filter:blur(10px);
+    animation:popupIn 0.6s ease forwards;
 }
 
-/* floating hearts */
-.small{
-    position:absolute;
+.popup-message{
+    font-size:32px;
+    font-weight:bold;
+    color:#ff1450;
+    text-shadow:0 0 15px rgba(255,20,80,0.5);
+}
+
+/* floating / popping hearts */
+.heart-pop{
+    position:fixed;
     color:#ff1a4d;
     font-size:22px;
-    animation:float 6s linear infinite;
+    pointer-events:none;
+    animation:floatUp 4s linear forwards;
+    text-shadow:0 0 12px rgba(255,26,77,0.7);
 }
 
-@keyframes float{
-    from{transform:translateY(0);opacity:1;}
-    to{transform:translateY(-900px);opacity:0;}
+/* animations */
+@keyframes floatUp{
+    0%{transform:translateY(0) scale(1);opacity:1;}
+    60%{transform:translateY(-150px) scale(1.2);opacity:0.9;}
+    100%{transform:translateY(-260px) scale(0.8);opacity:0;}
 }
 
 @keyframes fadeIn{
-    from{transform:scale(0.5);opacity:0;}
-    to{transform:scale(1);opacity:1;}
+    from{opacity:0;transform:translateY(10px);}
+    to{opacity:1;transform:translateY(0);}
+}
+
+@keyframes popupIn{
+    0%{opacity:0;transform:translate(-50%,-50%) scale(0.7);}
+    100%{opacity:1;transform:translate(-50%,-50%) scale(1);}
 }
 </style>
 </head>
 
 <body>
 
-<button id="btn" onclick="start()">Click to know about me</button>
+<!-- Step 1: Are you bored? -->
+<div id="step1" class="step" style="display:block;">
+    <h1>Are you bored? 🥱</h1>
+    <button onclick="goToStep2()">Yes</button>
+</div>
 
-<div id="heart" class="heart">
-    <div class="message">I LOVE YOU</div>
+<!-- Step 2: Do you love me? -->
+<div id="step2" class="step">
+    <h2>Do you love me? 💕</h2>
+    <button onclick="showLovePopup()">Yes</button>
+</div>
+
+<!-- Love popup -->
+<div id="lovePopup" class="popup" style="display:none;">
+    <div class="popup-message">I LOVE YOU TOO 💘</div>
 </div>
 
 <!-- optional background music -->
@@ -107,23 +131,42 @@ button{
 </audio>
 
 <script>
-function start(){
+function goToStep2(){
+    document.getElementById("step1").style.display="none";
+    document.getElementById("step2").style.display="block";
+}
 
-    document.getElementById("btn").style.display="none";
-    document.getElementById("heart").style.display="block";
+function showLovePopup(){
+    // show popup
+    const popup = document.getElementById("lovePopup");
+    popup.style.display = "block";
 
-    // play music if file exists
+    // play music if available
     document.getElementById("music").play().catch(()=>{});
 
-    // floating hearts
-    for(let i=0;i<35;i++){
-        let h=document.createElement("div");
-        h.innerHTML="❤";
-        h.className="small";
-        h.style.left=Math.random()*100+"%";
-        h.style.bottom="0px";
-        h.style.animationDuration=(Math.random()*3+3)+"s";
+    // create hearts
+    createHearts(40);
+}
+
+function createHearts(count){
+    for(let i = 0; i < count; i++){
+        const h = document.createElement("div");
+        h.className = "heart-pop";
+        h.innerHTML = "❤";
+
+        // random horizontal position and size
+        h.style.left = Math.random()*100 + "vw";
+        h.style.bottom = (Math.random()*10) + "vh";
+        h.style.fontSize = (18 + Math.random()*18) + "px";
+
+        // random animation duration
+        const duration = 3 + Math.random()*2;
+        h.style.animationDuration = duration + "s";
+
         document.body.appendChild(h);
+
+        // remove after animation finishes
+        setTimeout(()=>{ h.remove(); }, duration*1000);
     }
 }
 </script>
